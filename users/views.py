@@ -2,9 +2,10 @@ from django.shortcuts import render
 
 from rest_framework import status
 from rest_framework.response import Response
-from .models import user
+from .models import user, CardDetail, otp
 from rest_framework.views import APIView 
 from .serializers import UserSerializer as userSerializer
+from .serializers import CardDetailSerializer 
 
 class LoginView(APIView):
     def post(self, request):
@@ -61,3 +62,39 @@ class UserView(APIView):
                 return Response({'msg': 'User does not exist'}, status=status.HTTP_404_NOT_FOUND)
         else:
             return Response({'msg': 'Invalid Request'}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+class CardDetailView(APIView):
+    
+    allowed_methods = ['GET', 'POST']
+
+    def get(self, request,id = None):
+        if id:
+            try:
+                
+                card_obj = CardDetail.objects.filter(user=id)
+                if not card_obj:
+                    return Response({'msg': 'Card does not exist'}, status=status.HTTP_404_NOT_FOUND)
+                
+                serializer = CardDetailSerializer(card_obj)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            
+            except Exception as e:
+                return Response({'error': f'{e}'}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            cards = CardDetail.objects.all()
+            serializer = CardDetailSerializer(cards, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+    def post(self, request,id = None):
+        if id:
+            return Response({'msg': 'Invalid Request'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            serializer = CardDetailSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({'msg': 'Card Created'}, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+    

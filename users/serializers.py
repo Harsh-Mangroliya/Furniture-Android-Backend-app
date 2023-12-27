@@ -32,3 +32,7 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
     
+class CardDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CardDetail
+        fields = '__all__'

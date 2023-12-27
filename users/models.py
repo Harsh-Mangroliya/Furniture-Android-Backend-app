@@ -18,7 +18,6 @@ class user(AbstractBaseUser,PermissionsMixin):
     is_active = models.BooleanField(default=False)
 
 
-
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email']
 
@@ -39,3 +38,23 @@ class user(AbstractBaseUser,PermissionsMixin):
         verbose_name = _('user')
         verbose_name_plural = _('users')
         abstract = False
+
+class CardDetail(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey('users.user', on_delete=models.CASCADE)
+    cardNo = models.CharField(max_length=16)
+    nameOnCard = models.CharField(max_length=50)
+    expiryDate = models.CharField(max_length=5)
+    cvv = models.CharField(max_length=3)
+
+    def __str__(self):
+        return self.user.email
+
+class otp(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey('users.user', on_delete=models.CASCADE)
+    otp = models.CharField(max_length=6)
+    expiryDate = models.DateTimeField()
+
+    def __str__(self):
+        return self.user.email 
