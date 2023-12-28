@@ -6,6 +6,11 @@ from .models import user, CardDetail, otp
 from rest_framework.views import APIView 
 from .serializers import UserSerializer as userSerializer
 from .serializers import CardDetailSerializer 
+from django.conf import settings
+from django.core.mail import send_mail
+from django.views.decorators.csrf import csrf_exempt
+from asgiref.sync import async_to_sync
+
 
 class LoginView(APIView):
     def post(self, request):
@@ -97,4 +102,29 @@ class CardDetailView(APIView):
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
-    
+from django.http import HttpResponse    
+
+def sendMain1(request):
+    subject = "Test Greetings"
+    message = "Hope you are having a great day!"
+    email_from = settings.EMAIL_HOST_USER
+    receipient_list = ['harshsam612@gmail.com',]
+    send_mail(subject, message, email_from, receipient_list)
+
+    return  HttpResponse("Mail Sent")
+
+
+def sendMain(request):
+    subject = "Test Greetings"
+    message = "Hope you are having a great day!"
+    email_from = settings.EMAIL_HOST_USER
+    recipient_list = ['harshsam612@gmail.com']
+
+    try:
+        send_mail(subject, message, email_from, recipient_list)
+        success_message = "Mail Sent"
+    except Exception as e:
+        success_message = f"Mail could not be sent. Error: {str(e)}"
+
+
+    return HttpResponse(success_message)
