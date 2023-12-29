@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import *
+from users.models import user
  
 class order(APIView):
     def get(request,id=None):
@@ -23,10 +24,11 @@ class order(APIView):
                 },status=status.HTTP_400_BAD_REQUEST)
 
     def post(request):
-        userid = request.data['user']
+        userid = user.objects.filter(id=request.data['user']).first()
         products = request.data['products']
 
         orderobj = Order.object.create(customer=userid)
+        
         for i in products:
             OrderDetail.objects.create(
                 order=orderobj,
