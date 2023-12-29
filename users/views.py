@@ -16,8 +16,12 @@ class LoginView(APIView):
         password = request.data.get('password')
         try:
             user_obj = user.objects.get(username=username)
+            serializer = userSerializer(user_obj)
             if user_obj.check_password(password):
-                return Response({'msg': 'Login Successfull'}, status=status.HTTP_200_OK)
+                return Response({
+                    'msg': 'Login Successfull',
+                    "user":serializer.data
+                    }, status=status.HTTP_200_OK)
             else:
                 return Response({'msg': 'Invalid Password'}, status=status.HTTP_401_UNAUTHORIZED)
         except user.DoesNotExist:
