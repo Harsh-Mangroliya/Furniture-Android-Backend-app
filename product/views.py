@@ -63,9 +63,9 @@ class ProductView(APIView):
         else:
             return Response({'msg': 'Invalid Request'}, status=status.HTTP_400_BAD_REQUEST)
 
-class cart(APIView):
+class cartView(APIView):
     
-    def get(request,id=None):
+    def get(self,request,id=None):
         if id:
             try:
                 products_in_cart = cart.objects.filter(user=id)
@@ -77,8 +77,10 @@ class cart(APIView):
             except:
                 return Response({'msg': 'Invalid Request'}, status=status.HTTP_400_BAD_REQUEST)
             
-    def post(request):
+    def post(self,request,id=None):
+        print(request.data)
         obj = cart.objects.get(product=request.data['product'],user=request.data['user'])
+        print(obj)
         if obj:
             obj.quantity += 1
             obj.save()
@@ -89,8 +91,27 @@ class cart(APIView):
             return Response({'msg': 'Product Added to Cart'}, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def patch(self,request,id=None):
+        
+        obj = cart.objects.get(user = request.data['user'],product= request.data['product'])
+        if obj:
+            serializer = cartSetializer(obj, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({'msg': 'cart updated'}, status=status.HTTP_202_ACCEPTED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'msg': 'Invalid Request'}, status=status.HTTP_400_BAD_REQUEST)
 
-            
+    def delete(self,request,id=None):
+        obj = cart.objects.get(product=request.data['product'],user=request.data['user'])
+        if obj:
+            obj.delete()
+            return Response({'msg': 'cart deleted'}, status=status.HTTP_202_ACCEPTED)
+        else:
+            return Response({'msg': 'Invalid Request'}, status=status.HTTP_400_BAD_REQUEST)            
             
     
    
