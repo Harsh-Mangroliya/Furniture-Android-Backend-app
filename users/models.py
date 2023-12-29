@@ -5,7 +5,7 @@ from .managers import CustomUserManager
 
 class user(AbstractBaseUser,PermissionsMixin):
 
-    id = models.AutoField(primary_key=True)
+    id = models.BigAutoField(primary_key=True)
     username = models.CharField(max_length=50, unique=True)
     email = models.EmailField(_('email address'), unique=True)
 

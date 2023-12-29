@@ -9,6 +9,7 @@ from .serializers import CardDetailSerializer
 from django.conf import settings
 from product.models import cart
 
+
 class LoginView(APIView):
     def post(self, request):
         username = request.data.get('username')
@@ -43,16 +44,21 @@ class UserView(APIView):
         if id:
             return Response({'msg': 'Invalid Request'}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            serializer = userSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
+            try:
+                serializer = userSerializer(data=request.data)
+                if serializer.is_valid():
+                    userObj = serializer.save()
 
-                cart.objects.create(user=serializer.data['id'])
+                    #userObj = user.objects.get(email=request.data['email']) 
+                    #print(userObj)        
 
-                return Response({'msg': 'User Created'}, status=status.HTTP_201_CREATED)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            
+
+                    
+                    return Response({'msg': 'User Created'}, status=status.HTTP_201_CREATED)
+                else:
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except Exception as e:
+                return Response({'error': f'{e}'}, status=status.HTTP_400_BAD_REQUEST)    
     def patch(self, request,id = None):
         if id:
             try:
