@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import ProductSerializer, ProductImageSerializer
+from .serializers import ProductSerializer, ProductImageSerializer, cartSetializer
 
 class ProductView(APIView):
 
@@ -63,7 +63,34 @@ class ProductView(APIView):
         else:
             return Response({'msg': 'Invalid Request'}, status=status.HTTP_400_BAD_REQUEST)
 
+class cart(APIView):
+    
+    def get(request,id=None):
+        if id:
+            try:
+                products_in_cart = cart.objects.filter(user=id)
+                serializer = cartSetializer(products_in_cart, many=True)
+                if serializer.is_valid():
+                    return Response(serializer.data, status=status.HTTP_200_OK)
+                else:
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except:
+                return Response({'msg': 'Invalid Request'}, status=status.HTTP_400_BAD_REQUEST)
+            
+    def post(request):
+        obj = cart.objects.get(product=request.data['product'],user=request.data['user'])
+        if obj:
+            obj.quantity += 1
+            obj.save()
+            return Response({'msg': 'Product Added to Cart'}, status=status.HTTP_202_ACCEPTED)
+        serializer = cartSetializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'msg': 'Product Added to Cart'}, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
+            
+            
     
    

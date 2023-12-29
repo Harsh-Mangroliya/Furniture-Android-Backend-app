@@ -18,10 +18,3 @@ class OrderDetail(models.Model):
     def __str__(self):
         return self.order.customer.username
 
-class Cart(models.Model):
-    customer = models.ForeignKey('users.user', on_delete=models.CASCADE)
-    product = models.ForeignKey('product.Product', on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField()
-
-    def __str__(self):
-        return self.customer.username

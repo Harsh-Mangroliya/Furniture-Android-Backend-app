@@ -22,3 +22,9 @@ class productImage(models.Model):
     
     def image_url(self):
         return '%s%s' % (settings.MEDIA_URL, self.image)
+
+class cart(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='cart')
+    product = models.ForeignKey('product.Product', on_delete=models.CASCADE, related_name='productCart')
+    quantity = models.PositiveIntegerField()

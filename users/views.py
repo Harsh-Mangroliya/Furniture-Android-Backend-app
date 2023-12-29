@@ -7,10 +7,7 @@ from rest_framework.views import APIView
 from .serializers import UserSerializer as userSerializer
 from .serializers import CardDetailSerializer 
 from django.conf import settings
-from django.core.mail import send_mail
-from django.views.decorators.csrf import csrf_exempt
-from asgiref.sync import async_to_sync
-
+from product.models import cart
 
 class LoginView(APIView):
     def post(self, request):
@@ -49,6 +46,9 @@ class UserView(APIView):
             serializer = userSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
+
+                cart.objects.create(user=serializer.data['id'])
+
                 return Response({'msg': 'User Created'}, status=status.HTTP_201_CREATED)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -87,9 +87,7 @@ class CardDetailView(APIView):
             except Exception as e:
                 return Response({'error': f'{e}'}, status=status.HTTP_404_NOT_FOUND)
         else:
-            cards = CardDetail.objects.all()
-            serializer = CardDetailSerializer(cards, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({'msg': 'Invalid Request'}, status=status.HTTP_400_BAD_REQUEST)
         
     def post(self, request,id = None):
         if id:
@@ -102,29 +100,3 @@ class CardDetailView(APIView):
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
-from django.http import HttpResponse    
-
-def sendMain1(request):
-    subject = "Test Greetings"
-    message = "Hope you are having a great day!"
-    email_from = settings.EMAIL_HOST_USER
-    receipient_list = ['harshsam612@gmail.com',]
-    send_mail(subject, message, email_from, receipient_list)
-
-    return  HttpResponse("Mail Sent")
-
-
-def sendMain(request):
-    subject = "Test Greetings"
-    message = "Hope you are having a great day!"
-    email_from = settings.EMAIL_HOST_USER
-    recipient_list = ['harshsam612@gmail.com']
-
-    try:
-        send_mail(subject, message, email_from, recipient_list)
-        success_message = "Mail Sent"
-    except Exception as e:
-        success_message = f"Mail could not be sent. Error: {str(e)}"
-
-
-    return HttpResponse(success_message)

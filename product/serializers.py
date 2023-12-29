@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Product,productImage
+from .models import *
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
@@ -14,4 +14,8 @@ class ProductImageSerializer(serializers.ModelSerializer):
     def get_image_url(self, obj):
         return obj.image_url()
 
+class cartSetializer(serializers.ModelSerializer):
+    class Meta:
+        model = cart
+        fields = '__all__'
     
