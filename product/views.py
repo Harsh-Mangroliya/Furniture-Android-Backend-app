@@ -79,12 +79,13 @@ class cartView(APIView):
             
     def post(self,request,id=None):
         print(request.data)
-        obj = cart.objects.get(product=request.data['product'],user=request.data['user'])
-        print(obj)
+        obj = cart.objects.filter(product=request.data['product'],user=request.data['user']).first()
         if obj:
-            obj.quantity += 1
-            obj.save()
-            return Response({'msg': 'Product Added to Cart'}, status=status.HTTP_202_ACCEPTED)
+            # print(obj.quantity)
+            # print("##############")
+            obj.updateQty(request.data['quantity'])
+
+            return Response({'msg': 'Product quantity updated'}, status=status.HTTP_202_ACCEPTED)
         serializer = cartSetializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -96,12 +97,8 @@ class cartView(APIView):
         
         obj = cart.objects.get(user = request.data['user'],product= request.data['product'])
         if obj:
-            serializer = cartSetializer(obj, data=request.data, partial=True)
-            if serializer.is_valid():
-                serializer.save()
-                return Response({'msg': 'cart updated'}, status=status.HTTP_202_ACCEPTED)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            obj.updateQty(request.data['quantity'])
+            return Response({'msg': 'Product quantity updated'}, status=status.HTTP_202_ACCEPTED)
         else:
             return Response({'msg': 'Invalid Request'}, status=status.HTTP_400_BAD_REQUEST)
 

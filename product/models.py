@@ -28,3 +28,16 @@ class cart(models.Model):
     user = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='cart')
     product = models.ForeignKey('product.Product', on_delete=models.CASCADE, related_name='productCart')
     quantity = models.PositiveIntegerField()
+
+    def __str__(self):  
+        return self.product.name
+    
+    def update(self, quantity):
+        print(quantity)
+        self.quantity += quantity
+        self.save()
+
+    def updateQty(self,qty):
+        self.quantity += qty    
+        self.save()
+        return self.quantity
