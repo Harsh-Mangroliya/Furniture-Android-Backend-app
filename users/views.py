@@ -82,12 +82,11 @@ class CardDetailView(APIView):
     def get(self, request,id = None):
         if id:
             try:
-                
                 card_obj = CardDetail.objects.filter(user=id)
                 if not card_obj:
                     return Response({'msg': 'Card does not exist'}, status=status.HTTP_404_NOT_FOUND)
                 
-                serializer = CardDetailSerializer(card_obj)
+                serializer = CardDetailSerializer(card_obj, many=True)
                 return Response(serializer.data, status=status.HTTP_200_OK)
             
             except Exception as e:
@@ -96,8 +95,16 @@ class CardDetailView(APIView):
             return Response({'msg': 'Invalid Request'}, status=status.HTTP_400_BAD_REQUEST)
         
     def post(self, request,id = None):
+        
         if id:
-            return Response({'msg': 'Invalid Request'}, status=status.HTTP_400_BAD_REQUEST)
+            card_obj = CardDetail.objects.filter(id=id)
+
+            if card_obj:
+                serializer = CardDetailSerializer(card_obj, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response({'msg': 'Card does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+        
         else:
             serializer = CardDetailSerializer(data=request.data)
             if serializer.is_valid():
