@@ -19,7 +19,7 @@ class LoginView(APIView):
             serializer = userSerializer(user_obj)
             if user_obj.check_password(password):
                 return Response({
-                    'msg': 'Login Successfull',
+                    "msg": "Login Successfull",
                     "user":serializer.data
                     }, status=status.HTTP_200_OK)
             else:
@@ -55,10 +55,11 @@ class UserView(APIView):
 
                     #userObj = user.objects.get(email=request.data['email']) 
                     #print(userObj)        
-
-
                     
-                    return Response({'msg': 'User Created'}, status=status.HTTP_201_CREATED)
+                    return Response({
+                        'msg': 'User Created',
+                        'user': serializer.data,    
+                        }, status=status.HTTP_201_CREATED)
                 else:
                     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             except Exception as e:
