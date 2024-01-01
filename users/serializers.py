@@ -14,12 +14,12 @@ class UserSerializer(serializers.ModelSerializer):
         }
         
     def create(self, validated_data):
-        userobj = user(**validated_data)
         password = validated_data.pop('password', None)
+        userobj = user(**validated_data)
         if password:
             userobj.set_password(password)
-        userobj.save()
-        return user
+            userobj.save()
+        return userobj
     
     def update(self, instance, validated_data):
         password = validated_data.pop('password', None)
