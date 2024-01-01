@@ -98,7 +98,7 @@ WSGI_APPLICATION = 'testDjango.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "furnitureApp",
+        "NAME": "furnitureAppDev",
         "USER": "pratham",
         "PASSWORD": os.environ.get('DB_PASSWORD'),
         "HOST": "furniture.postgres.database.azure.com",
