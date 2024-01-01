@@ -7,7 +7,7 @@ from .serializers import *
 from users.models import user
  
 class order(APIView):
-    def get(request,id=None):
+    def get(self,request,id=None):
         if id:
             orderobj = Order.objects.get(id=id)
             orderdetailobj = OrderDetail.objects.filter(order=orderobj)
@@ -23,7 +23,7 @@ class order(APIView):
                 "message":"Order id is required"
                 },status=status.HTTP_400_BAD_REQUEST)
 
-    def post(request,id=None):
+    def post(self,request,id=None):
         if id:
             return Response({
                 "success":False,
@@ -49,19 +49,24 @@ class order(APIView):
             },status=status.HTTP_201_CREATED)
 
 class AllOrder(APIView):
-    def get(request,userid = None):
-        if userid:
-            orders = Order.objects.filter(customer=userid)
+    def get(self,request,id=None):
+        if id:
+            orders = Order.objects.filter(customer=id)
             jsondata = {}
             for i in orders:
                 orderdetail = OrderDetail.objects.filter(order=i)
                 serializer = orderDetailSerializer(orderdetail,many=True)
                 jsondata[i.id] = serializer.data
-            print(jsondata)
+            
             return Response({
                 "success":True,
                 "orders":jsondata
                 },status=status.HTTP_200_OK)    
+        else:
+            return Response({
+                "success":False,
+                "message":"User id is required"
+                },status=status.HTTP_400_BAD_REQUEST)
         
 
 

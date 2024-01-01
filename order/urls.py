@@ -2,7 +2,7 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
-    path('placeorder/',order.as_view()),
-    path('allorder/<int:id>/',order.as_view()),
-    path('all/<int:userid>/',AllOrder.as_view()),
+    path('placeorder/',order.as_view(),name='place_order'),
+    path('allorder/<int:id>/',order.as_view(),name='order_detail'),
+    path('all/<int:id>/',AllOrder.as_view(),name='all_orders'),
 ]
