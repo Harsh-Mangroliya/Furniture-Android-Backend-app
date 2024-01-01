@@ -23,7 +23,13 @@ class order(APIView):
                 "message":"Order id is required"
                 },status=status.HTTP_400_BAD_REQUEST)
 
-    def post(request):
+    def post(request,id=None):
+        if id:
+            return Response({
+                "success":False,
+                "message":"Invalid request"
+                },status=status.HTTP_400_BAD_REQUEST)
+        
         userid = user.objects.filter(id=request.data['user']).first()
         products = request.data['products']
 
