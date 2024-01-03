@@ -54,7 +54,7 @@ class otp(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey('users.user', on_delete=models.CASCADE)
     otp = models.CharField(max_length=6)
-    expiryDate = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True,blank=True, null=True)
 
     def __str__(self):
         return self.user.email 

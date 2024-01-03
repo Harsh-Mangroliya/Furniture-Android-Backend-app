@@ -9,6 +9,10 @@ from .serializers import CardDetailSerializer
 from django.conf import settings
 from product.models import cart
 
+from django.core.mail import send_mail
+from django.conf import settings
+
+
 
 class LoginView(APIView):
     def post(self, request):
@@ -52,6 +56,10 @@ class UserView(APIView):
                 serializer = userSerializer(data=request.data)
                 if serializer.is_valid():
                     userObj = serializer.save()
+
+                    
+                    otpObj = otp.objects.create(user=userObj, otp=createOTP())
+                    mail_otp(userObj.fullname,otpObj.otp,userObj.email)
 
                     #userObj = user.objects.get(email=request.data['email']) 
                     #print(userObj)        
@@ -114,7 +122,68 @@ class CardDetailView(APIView):
             serializer = CardDetailSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
+
                 return Response({'msg': 'Card Created'}, status=status.HTTP_201_CREATED)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+from django.utils import timezone
+from datetime import timedelta
+
+class OTPVerifyView(APIView):
+    
+    def post(self,request):
+        try:
+            otpObj = otp.objects.get(otp=request.data['otp'])
+
+            if otpObj.user == request.data['user'] and otpObj.created_at > timezone.now() - timedelta(minutes=5):
+                otpObj.delete()
+                return Response({'msg': 'OTP verified'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'msg': 'OTP not verified'}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'error': f'{e}'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+def createOTP():
+    import random
+    otp = random.randint(100000, 999999)
+    return otp 
+
+def mail_otp(name,otp,email):    
+
+    try:
+        user = name
+        OTP = otp
+        receiver = [email]
+        
+        message = f'''<div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
+<div style="margin:50px auto;width:80%;padding:20px 0">
+<div style="border-bottom:5px solid #eee">
+  <a href="" style="font-size:30px;color: #f7c800;text-decoration:none;font-weight:600">Furniture App</a>
+</div>
+<p style="font-size:15px">Hello {user},</p>
+<p>Thank you for choosing furniture app. Use this OTP to complete your Sign Up procedures and verify your account on Furniture app.</p>
+<p>Remember, Never share this OTP with anyone.</p>
+<h2 style="background: #00466a;margin: 0 auto;width: max-content;padding: 0 10px;color: #fff;border-radius: 4px;">{OTP}</h2>
+<p style="font-size:15px;">Regards,<br />Team Furniture app</p>
+<hr style="border:none;border-top:5px solid #eee" />
+<div style="float:right;padding:8px 0;color:#aaa;font-size:0.8em;line-height:1;font-weight:300">
+
+ </div>
+</div>
+</div>'''
+        send_mail(
+            "Furniture app - email verification",
+            '',
+            settings.EMAIL_HOST_USER,
+            receiver,
+            fail_silently=False,
+            html_message=message
+        )
+        return True
+    except Exception as e:
+        print(e)
+        return False
             
