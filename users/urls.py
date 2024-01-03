@@ -11,5 +11,6 @@ urlpatterns = [
     path('card/<int:id>/',CardDetailView.as_view()),
 
     path('verifyotp/',OTPVerifyView.as_view()),
+    path('sendotp/',SendOTPView.as_view()),
 
 ]

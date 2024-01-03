@@ -57,8 +57,10 @@ class UserView(APIView):
                 if serializer.is_valid():
                     userObj = serializer.save()
 
-                    
+                    print(userObj)
+                    print(userObj.id)
                     otpObj = otp.objects.create(user=userObj, otp=createOTP())
+                    print(request.data['fullname'],otpObj.otp,request.data['email'])
                     mail_otp(userObj.fullname,otpObj.otp,userObj.email)
 
                     #userObj = user.objects.get(email=request.data['email']) 
@@ -139,7 +141,25 @@ class OTPVerifyView(APIView):
 
             if otpObj.user == request.data['user'] and otpObj.created_at > timezone.now() - timedelta(minutes=5):
                 otpObj.delete()
+                userobj = user.objects.get(id=request.data['user'])
+                userobj.is_active = True
+                userobj.save()
+
+                receiver = [userobj.email]
+                send_mail(
+                    "Furniture app - Welcome to Furniture app",
+                    'Your post has been created successfully.',
+                    settings.EMAIL_HOST_USER,
+                    receiver,
+                    fail_silently=False
+                )
+
                 return Response({'msg': 'OTP verified'}, status=status.HTTP_200_OK)
+
+            elif otpObj.created_at > timezone.now() - timedelta(minutes=5):
+                otpObj.delete()
+                return Response({'msg': 'OTP expired'}, status=status.HTTP_400_BAD_REQUEST)
+
             else:
                 return Response({'msg': 'OTP not verified'}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
@@ -187,3 +207,11 @@ def mail_otp(name,otp,email):
         print(e)
         return False
             
+class SendOTPView(APIView):
+    def get(self,request):
+        try:
+            mail_otp("Harsh",123456,"harshmangroliya0@gmail.com")
+            
+            return Response({'msg': 'OTP sent'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': f'{e}'}, status=status.HTTP_400_BAD_REQUEST)
