@@ -139,7 +139,7 @@ class OTPVerifyView(APIView):
         try:
             otpObj = otp.objects.get(otp=request.data['otp'])
 
-            if otpObj.user == request.data['user'] and otpObj.created_at > timezone.now() - timedelta(minutes=5):
+            if otpObj.user == request.data['user'] or otpObj.created_at > timezone.now() - timedelta(minutes=5):
                 otpObj.delete()
                 userobj = user.objects.get(id=request.data['user'])
                 userobj.is_active = True
@@ -157,6 +157,7 @@ class OTPVerifyView(APIView):
                 return Response({'msg': 'OTP verified'}, status=status.HTTP_200_OK)
 
             elif otpObj.created_at > timezone.now() - timedelta(minutes=5):
+                
                 otpObj.delete()
                 return Response({'msg': 'OTP expired'}, status=status.HTTP_400_BAD_REQUEST)
 
