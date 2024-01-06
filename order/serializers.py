@@ -2,12 +2,12 @@ from rest_framework import serializers
 from .models import *
 
 class orderSerializer(serializers.ModelSerializer):
-    class meta:
+    class Meta:
         model = Order
-        field = '__all__'
+        fields = '__all__'
 
 class orderDetailSerializer(serializers.ModelSerializer):
-    class meta:
+    class Meta:
         model = OrderDetail
-        field = '__all__'
+        fields = '__all__'
 
