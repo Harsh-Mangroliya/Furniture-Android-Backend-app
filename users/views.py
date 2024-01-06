@@ -212,7 +212,7 @@ class forgotPassword(APIView):
     
     def post(self,request):
         try:
-            user_obj = user.objects.get(id=request.data['id'])
+            user_obj = user.objects.get(email=request.data['email'])
             otpObj = otp.objects.create(user=user_obj, otp=createOTP())
             print(user_obj.fullname,otpObj.otp,user_obj.email)
             send_mail(
