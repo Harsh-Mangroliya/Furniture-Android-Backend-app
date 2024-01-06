@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import *
 from users.models import user
+from product.models import Product
  
 class order(APIView):
     def get(self,request,id=None):
@@ -24,6 +25,7 @@ class order(APIView):
                 },status=status.HTTP_400_BAD_REQUEST)
 
     def post(self,request,id=None):
+
         if id:
             return Response({
                 "success":False,
@@ -31,14 +33,18 @@ class order(APIView):
                 },status=status.HTTP_400_BAD_REQUEST)
         
         userid = user.objects.filter(id=request.data['user']).first()
+        print(userid)
         products = request.data['products']
+        print(products)
 
-        orderobj = Order.object.create(customer=userid)
-        
+        orderobj = Order.objects.create(customer=userid)
+        print(orderobj)
+
         for i in products:
+            productObj = Product.objects.get(id=i['product'])
             OrderDetail.objects.create(
                 order=orderobj,
-                product=i['product'],
+                product=productObj,
                 quantity=i['quantity'],
                 price = i['price']
                 )

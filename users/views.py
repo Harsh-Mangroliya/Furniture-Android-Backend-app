@@ -148,7 +148,7 @@ class OTPVerifyView(APIView):
                 receiver = [userobj.email]
                 send_mail(
                     "Furniture app - Welcome to Furniture app",
-                    'Your post has been created successfully.',
+                    'Your profile has been created successfully.',
                     settings.EMAIL_HOST_USER,
                     receiver,
                     fail_silently=False
@@ -207,7 +207,28 @@ def mail_otp(name,otp,email):
     except Exception as e:
         print(e)
         return False
+
+class forgotPassword(APIView):
+    
+    def post(self,request):
+        try:
+            user_obj = user.objects.get(id=request.data['id'])
+            otpObj = otp.objects.create(user=user_obj, otp=createOTP())
+            print(user_obj.fullname,otpObj.otp,user_obj.email)
+            send_mail(
+                "Furniture app - Forgot password",
+                f'Hello {user_obj.fullname},\nUse this OTP to reset your password.\n{otpObj.otp}',
+                settings.EMAIL_HOST_USER,
+                [user_obj.email],
+                fail_silently=False
+            )
             
+            
+            return Response({'msg': 'OTP sent'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': f'{e}'}, status=status.HTTP_400_BAD_REQUEST)
+
+
 class SendOTPView(APIView):
     def get(self,request):
         try:

@@ -13,4 +13,6 @@ urlpatterns = [
     path('verifyotp/',OTPVerifyView.as_view()),
     path('sendotp/',SendOTPView.as_view()),
 
+    path('forgotpassword/',forgotPassword.as_view()),
+
 ]
