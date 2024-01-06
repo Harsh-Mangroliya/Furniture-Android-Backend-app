@@ -16,6 +16,7 @@ class order(APIView):
             serializer = orderDetailSerializer(orderdetailobj,many=True)
             for j in serializer.data:
                 ProductObj = Product.objects.get(id=j['product'])
+                print(ProductObj)
                 j['product'] = ProductObj.name
             
             return Response({
