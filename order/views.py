@@ -10,9 +10,14 @@ from product.models import Product
 class order(APIView):
     def get(self,request,id=None):
         if id:
+
             orderobj = Order.objects.get(id=id)
             orderdetailobj = OrderDetail.objects.filter(order=orderobj)
             serializer = orderDetailSerializer(orderdetailobj,many=True)
+            for j in serializer.data:
+                ProductObj = Product.objects.get(id=j['product'])
+                j['product'] = ProductObj.name
+            
             return Response({
                 "success":True,
                 "order":orderobj.id,
