@@ -62,7 +62,11 @@ class AllOrder(APIView):
             for i in orders:
                 orderdetail = OrderDetail.objects.filter(order=i)
                 serializer = orderDetailSerializer(orderdetail,many=True)
+                for j in serializer.data:
+                    ProductObj = Product.objects.get(id=j['product'])
+                    j['product'] = ProductObj.name
                 jsondata[i.id] = serializer.data
+                
             
             return Response({
                 "success":True,
