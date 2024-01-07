@@ -99,7 +99,7 @@ WSGI_APPLICATION = 'testDjango.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "furnitureProduction",
+        "NAME": os.environ.get('DB_NAME'),
         "USER": "pratham",
         "PASSWORD": os.environ.get('DB_PASSWORD'),
         "HOST": "furniture.postgres.database.azure.com",
@@ -200,6 +200,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'furnitureapp97@gmail.com'
+EMAIL_HOST_USER = os.environ.get('EMAIL_ID')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 
