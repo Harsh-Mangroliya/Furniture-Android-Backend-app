@@ -47,7 +47,7 @@ class order(APIView):
         print(orderobj)
 
         for i in products:
-            productObj = Product.objects.get(id=i['product'])
+            productObj = Product.objects.filter(id=i['id']).first()
             OrderDetail.objects.create(
                 order=orderobj,
                 product=productObj,

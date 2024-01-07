@@ -87,6 +87,7 @@ class UserView(APIView):
             except user.DoesNotExist:
                 return Response({'msg': 'User does not exist'}, status=status.HTTP_404_NOT_FOUND)
         else:
+            
             return Response({'msg': 'Invalid Request'}, status=status.HTTP_400_BAD_REQUEST)
         
 
