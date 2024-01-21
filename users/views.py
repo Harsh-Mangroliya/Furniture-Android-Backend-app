@@ -152,8 +152,9 @@ class OTPVerifyView(APIView):
                 userobj.save()
 
                 receiver = [userobj.email]
+                app_name = os.environ.get('APP_NAME')
                 send_mail(
-                    "Furniture app - Welcome to Furniture app",
+                    f"{app_name} app - Welcome to {app_name} app",
                     'Your profile has been activated successfully.',
                     settings.EMAIL_HOST_USER,
                     receiver,
@@ -179,7 +180,7 @@ def createOTP():
     return otp 
 
 def mail_otp(name,otp,email):    
-
+    app_name = os.environ.get('APP_NAME')
     try:
         user = name
         OTP = otp
@@ -188,13 +189,13 @@ def mail_otp(name,otp,email):
         message = f'''<div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
 <div style="margin:50px auto;width:80%;padding:20px 0">
 <div style="border-bottom:5px solid #eee">
-  <a href="" style="font-size:30px;color: #f7c800;text-decoration:none;font-weight:600">Furniture App</a>
+  <a href="" style="font-size:30px;color: #f7c800;text-decoration:none;font-weight:600">{app_name} App</a>
 </div>
 <p style="font-size:15px">Hello {user},</p>
-<p>Thank you for choosing furniture app. Use this OTP to complete your Sign Up procedures and verify your account on Furniture app.</p>
+<p>Thank you for choosing {app_name} app. Use this OTP to complete your Sign Up procedures and verify your account on {app_name} app.</p>
 <p>Remember, Never share this OTP with anyone.</p>
 <h2 style="background: #00466a;margin: 0 auto;width: max-content;padding: 0 10px;color: #fff;border-radius: 4px;">{OTP}</h2>
-<p style="font-size:15px;">Regards,<br />Team Furniture app</p>
+<p style="font-size:15px;">Regards,<br />Team {app_name} app</p>
 <hr style="border:none;border-top:5px solid #eee" />
 <div style="float:right;padding:8px 0;color:#aaa;font-size:0.8em;line-height:1;font-weight:300">
 
@@ -202,7 +203,7 @@ def mail_otp(name,otp,email):
 </div>
 </div>'''
         send_mail(
-            "Furniture app - email verification",
+            f"{app_name} app - email verification",
             '',
             settings.EMAIL_HOST_USER,
             receiver,
@@ -218,11 +219,12 @@ class forgotPassword(APIView):
     
     def post(self,request):
         try:
+            app_name = os.environ.get('APP_NAME')
             user_obj = user.objects.get(email=request.data['email'])
             otpObj = otp.objects.create(user=user_obj, otp=createOTP())
             print(user_obj.fullname,otpObj.otp,user_obj.email)
             send_mail(
-                "Furniture app - Forgot password",
+                f"{app_name} app - Forgot password",
                 f'Hello {user_obj.fullname},\nUse this OTP to reset your password.\n{otpObj.otp}',
                 settings.EMAIL_HOST_USER,
                 [user_obj.email],
