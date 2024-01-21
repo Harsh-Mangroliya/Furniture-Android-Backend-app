@@ -13,9 +13,14 @@ from django.core.mail import send_mail
 from django.conf import settings
 
 
-
+import os
 class LoginView(APIView):
     def post(self, request):
+        print(os.environ.get('EMAIL_ID'))
+        print(os.environ.get('EMAIL_PASSWORD'))
+        print("#############")
+        print(os.environ.get('DB_NAME'))
+        print(os.environ.get('DB_PASSWORD'))
         username = request.data.get('username')
         password = request.data.get('password')
         try:
